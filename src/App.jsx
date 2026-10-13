@@ -1,60 +1,42 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-
-function App() {
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    fetch("https://dummyjson.com/products")
-      .then(response => response.json())
-      .then(data => {
-        setProducts(data.products);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, []);
-
+import React, { Suspense } from 'react'
+import Footer from "./components/footer/Footer"
+import Header from "./components/headers/Header"
+import { Route, Routes } from 'react-router-dom'
+// import CounterP from "./components/CounterP"
+const CounterP = React.lazy(()=>import("./components/CounterP"));
+import Contact from "./components/Contact"
+import Courses from './components/Courses'
+import About from "./components/About"
+import Offline from './components/Offline'
+import Online from './components/Online'
+import Error404 from './components/Error404'
+import Product from './components/Product'
+import Spinner from './components/Spinner'
+import Home from './components/Home';
+const App = () => {
   return (
-    <div className="container">
-      <h1>Products</h1>
+    <div className='container'>
+        <Header/>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/courses" element={<Courses/>}>
+          <Route index element={<Offline/>}/>
+          <Route path="offline" element={<Offline/>}/>
+          <Route path="online" element={<Online/>}/>
+          </Route>
+          <Route path="/courses" element={<Courses/>}/>
+          <Route path="/counter" element={<Suspense fallback={<Spinner/>}>
+            <CounterP/>
+            </Suspense>}/>
+          <Route path="/product" element={<Product/>}/>
+          <Route path="/contact" element={<Contact/>}/>
+          <Route path="/about" element={<About info="This is props by routes"/>}/>
+          <Route path="*" element={<Error404/>}/>
 
-      <div className="product-container">
-        {products.map(product => (
-          <div className="product-card" key={product.id}>
-
-            <img
-              src={product.thumbnail}
-              alt={product.title}
-            />
-
-            <h2>{product.title}</h2>
-
-            <p className="description">
-              {product.description}
-            </p>
-
-            <p><b>Price:</b> ${product.price}</p>
-
-            <p><b>Discount:</b> {product.discountPercentage}%</p>
-
-            <p><b>Rating:</b> ⭐ {product.rating}</p>
-
-            <p><b>Stock:</b> {product.stock}</p>
-
-            <p><b>Category:</b> {product.category}</p>
-
-            <p><b>Brand:</b> {product.brand}</p>
-
-            <p className="status">
-              {product.availabilityStatus}
-            </p>
-
-          </div>
-        ))}
-      </div>
+        </Routes>
+        <Footer/>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
