@@ -1,42 +1,61 @@
-import React, { Suspense } from 'react'
-import Footer from "./components/footer/Footer"
-import Header from "./components/headers/Header"
-import { Route, Routes } from 'react-router-dom'
-// import CounterP from "./components/CounterP"
-const CounterP = React.lazy(()=>import("./components/CounterP"));
-import Contact from "./components/Contact"
-import Courses from './components/Courses'
-import About from "./components/About"
-import Offline from './components/Offline'
-import Online from './components/Online'
-import Error404 from './components/Error404'
-import Product from './components/Product'
-import Spinner from './components/Spinner'
-import Home from './components/Home';
-const App = () => {
-  return (
-    <div className='container'>
-        <Header/>
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/courses" element={<Courses/>}>
-          <Route index element={<Offline/>}/>
-          <Route path="offline" element={<Offline/>}/>
-          <Route path="online" element={<Online/>}/>
-          </Route>
-          <Route path="/courses" element={<Courses/>}/>
-          <Route path="/counter" element={<Suspense fallback={<Spinner/>}>
-            <CounterP/>
-            </Suspense>}/>
-          <Route path="/product" element={<Product/>}/>
-          <Route path="/contact" element={<Contact/>}/>
-          <Route path="/about" element={<About info="This is props by routes"/>}/>
-          <Route path="*" element={<Error404/>}/>
 
-        </Routes>
-        <Footer/>
+import { useState } from "react";
+import "./App.css";
+
+function App() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+
+      const result = await response.json();
+
+      setData(result);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>API Fetch Practical</h1>
+
+      <div className="buttons">
+        <button onClick={fetchData}>Fetch Users</button>
+        <button onClick={() => alert("Button 2 clicked")}>
+          Button 2
+        </button>
+        <button onClick={() => alert("Button 3 clicked")}>
+          Button 3
+        </button>
+        <button onClick={() => alert("Button 4 clicked")}>
+          Button 4
+        </button>
+      </div>
+
+      {loading && <p>Loading data...</p>}
+
+      {data && (
+        <div>
+          <h2>User List</h2>
+
+          {data.map((user) => (
+            <p key={user.id}>
+              {user.id}. {user.name} - {user.email}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
